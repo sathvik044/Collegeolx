@@ -1,11 +1,18 @@
+import React, { useState } from 'react';
 import { Card, CardContent, CardMedia, Typography, IconButton, Button, Box } from '@mui/material';
 import { Favorite, FavoriteBorder } from '@mui/icons-material';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onFavoriteClick }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const navigate = useNavigate();
+
+  const handleFavoriteClick = () => {
+    setIsFavorite(!isFavorite);
+    if (onFavoriteClick) {
+      onFavoriteClick(product.id);
+    }
+  };
 
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -21,7 +28,7 @@ const ProductCard = ({ product }) => {
             {product.title}
           </Typography>
           <IconButton 
-            onClick={() => setIsFavorite(!isFavorite)}
+            onClick={handleFavoriteClick}
             color="primary"
           >
             {isFavorite ? <Favorite /> : <FavoriteBorder />}

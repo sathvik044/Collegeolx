@@ -13,9 +13,12 @@ const Buy = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get('http://localhost:8085/api/products/approved');
+        // Only fetch approved products
+        const response = await axios.get('http://localhost:8085/api/products/available');
         console.log('Products response:', response.data);
-        setProducts(response.data || []);
+        // Filter to show only approved products
+        const approvedProducts = response.data.filter(product => product.status === 'APPROVED');
+        setProducts(approvedProducts || []);
       } catch (error) {
         console.error('API Error:', error);
         setError('Failed to load products');

@@ -43,6 +43,10 @@ public class ProductService {
         return productRepository.findByStatus("APPROVED");
     }
 
+    public List<Product> findByStatus(String status) {
+        return productRepository.findByStatus(status);
+    }
+
     public Product createProduct(Product product, MultipartFile image) {
         try {
             // Debug log

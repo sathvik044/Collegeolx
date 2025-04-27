@@ -2,6 +2,7 @@ package com.collegeolx.collegeolx.repository;
 
 import com.collegeolx.collegeolx.model.Product;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;  // Add this import
 import org.springframework.stereotype.Repository;
 import java.util.List;
 

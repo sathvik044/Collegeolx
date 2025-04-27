@@ -64,16 +64,32 @@ public class AdminController {
         return ResponseEntity.ok(productService.getPendingProducts());
     }
 
-    @PostMapping("/products/{productId}/approve")
+    @PostMapping("/products/{productId}/approve")  // Changed from PutMapping to PostMapping
     public ResponseEntity<?> approveProduct(@PathVariable String productId) {
         try {
+            System.out.println("Attempting to approve product with ID: " + productId); // Debug log
+            if (productId == null || productId.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Product ID is required");
+            }
             Product approvedProduct = productService.approveProduct(productId);
+            System.out.println("Successfully approved product: " + approvedProduct); // Debug log
             return ResponseEntity.ok(approvedProduct);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
+            System.err.println("Error approving product: " + e.getMessage()); // Error log
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Failed to approve product: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/products/{productId}")
+    public ResponseEntity<?> updateProduct(@PathVariable String productId, @RequestBody Product product) {
+        try {
+            Product updatedProduct = productService.updateProduct(productId, product);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Failed to update product: " + e.getMessage());
         }
     }
 

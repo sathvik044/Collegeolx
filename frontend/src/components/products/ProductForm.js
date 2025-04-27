@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { Container, Paper, Typography, TextField, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { Container, Typography, TextField, Button, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import productService from '../../services/product';
-import authService from '../../services/auth';
 
 const ProductForm = () => {
   const navigate = useNavigate();
@@ -10,57 +9,75 @@ const ProductForm = () => {
     title: '',
     description: '',
     price: '',
+    category: '',
     image: null
   });
-  const currentUser = authService.getCurrentUser();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const data = new FormData();
-      data.append('title', formData.title);
-      data.append('description', formData.description);
-      data.append('price', formData.price);
-      data.append('image', formData.image);
-      data.append('sellerId', currentUser.id);
-      data.append('isSold', false);
-
+      for (const [key, value] of Object.entries(formData)) {
+        data.append(key, value);
+      }
       await productService.createProduct(data);
-      navigate('/buy'); // Redirects to buy page after product is listed
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error creating product:', error);
     }
   };
 
+  const handleImageChange = (e) => {
+    setFormData({ ...formData, image: e.target.files[0] });
+  };
+
   return (
     <Container maxWidth="sm">
-      <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
-        <Typography variant="h5" gutterBottom>Sell Product</Typography>
+      <Box sx={{ my: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Sell Your Product
+        </Typography>
         <form onSubmit={handleSubmit}>
-          <TextField 
-            fullWidth 
-            label="Title" 
+          <TextField
+            fullWidth
+            label="Title"
             margin="normal"
+            required
+            value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            required 
           />
-          <TextField 
-            fullWidth 
-            label="Description" 
-            multiline 
-            rows={4} 
+          <TextField
+            fullWidth
+            label="Description"
             margin="normal"
+            required
+            multiline
+            rows={4}
+            value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            required
           />
-          <TextField 
-            fullWidth 
-            label="Price" 
-            type="number" 
+          <TextField
+            fullWidth
+            label="Price"
             margin="normal"
-            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
             required
+            type="number"
+            value={formData.price}
+            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
           />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Category</InputLabel>
+            <Select
+              value={formData.category}
+              label="Category"
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            >
+              <MenuItem value="books">Books</MenuItem>
+              <MenuItem value="electronics">Electronics</MenuItem>
+              <MenuItem value="furniture">Furniture</MenuItem>
+              <MenuItem value="other">Other</MenuItem>
+            </Select>
+          </FormControl>
           <Button
             variant="contained"
             component="label"
@@ -72,19 +89,20 @@ const ProductForm = () => {
               type="file"
               hidden
               accept="image/*"
-              onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
+              onChange={handleImageChange}
             />
           </Button>
-          <Button 
+          <Button
             type="submit"
-            fullWidth 
-            variant="contained" 
-            sx={{ mt: 2 }}
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ mt: 3 }}
           >
-            Sell
+            Sell Product
           </Button>
         </form>
-      </Paper>
+      </Box>
     </Container>
   );
 };
